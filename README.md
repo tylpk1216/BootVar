@@ -14,7 +14,7 @@ VC2015
 1. Create "BootVar" folder in UDK\AppPkg.
 2. Put BootVar.c and BootVar.inf in "BootVar" folder.
 3. Add "AppPkg/Applications/BootVar/BootVar.inf" in "[Components]" of "AppPkg\AppPkg.dsc"
-4. Buils it
+4. Build it
 ```
 
 # Run on my motherboard
