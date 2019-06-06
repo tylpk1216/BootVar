@@ -13,12 +13,7 @@ VOID* mGetVariable(CHAR16 *name, EFI_GUID *guid, UINTN *size)
     UINTN       realSize;
     VOID        *value;
 
-    //ASSERT(name != NULL);
-    //ASSERT(guid != NULL);
-
-    //
     // Try to get the variable size.
-    //
     value = NULL;
     realSize = 0;
     status = gRT->GetVariable(name, guid, NULL, &realSize, value);
@@ -26,17 +21,13 @@ VOID* mGetVariable(CHAR16 *name, EFI_GUID *guid, UINTN *size)
         return NULL;
     }
 
-    //
     // Allocate buffer to get the variable.
-    //
     value = AllocatePool(realSize);
     if (value == NULL) {
         return NULL;
     }
 
-    //
     // Get the variable data.
-    //
     status = gRT->GetVariable(name, guid, NULL, &realSize, value);
     if (EFI_ERROR(status)) {
         FreePool(value);
