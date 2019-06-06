@@ -1,5 +1,7 @@
 # BootVar
+```
 Get Boot Variables in UEFI Shell, e.g. Boot0000, Boot0001 ...
+```
 
 # Environment
 ```
