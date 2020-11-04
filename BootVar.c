@@ -40,11 +40,12 @@ VOID* mGetVariable(CHAR16 *name, EFI_GUID *guid, UINTN *size)
 
 int main(void)
 {
-    VOID *value;
+    VOID *bootOrder;
+    VOID *bootVar;
     UINTN size;
-
+    UINT16 *bootNum;
     UINTN varCount;
-    UINTN i;
+    UINTN varNowCount;
 
     UINT16 bootString[10];
     UINT16 *desc;
@@ -54,28 +55,29 @@ int main(void)
 
     char *ptr;
 
-    value = mGetVariable(L"BootOrder", &gEfiGlobalVariableGuid, &size);
-    if (value == NULL) {
+    bootOrder = mGetVariable(L"BootOrder", &gEfiGlobalVariableGuid, &size);
+    if (bootOrder == NULL) {
         printf("Can't get BootOrder Variable \n");
         return -1;
     }
 
-    FreePool(value);
-
     varCount = size / 2;
-    for (i = 0; i < varCount; i++) {
-        UnicodeSPrint(bootString, sizeof(bootString), L"Boot%04x", i);
 
-        value = mGetVariable(bootString, &gEfiGlobalVariableGuid, &size);
-        if (value == NULL) {
-            printf("Can't get Boot%04X Variable \n", i);
+    varNowCount = 1;
+    bootNum = (UINT16*)bootOrder;
+    while (varNowCount <= varCount) {
+        UnicodeSPrint(bootString, sizeof(bootString), L"Boot%04x", *bootNum);
+
+        bootVar = mGetVariable(bootString, &gEfiGlobalVariableGuid, &size);
+        if (bootVar == NULL) {
+            printf("Can't get Boot%04X Variable \n", *bootNum);
             return -1;
         }
 
-        ptr = (char*)value;
+        ptr = (char*)bootVar;
 
         desc = (UINT16*)(ptr + 6);
-        Print(L"Boot%04X : %s \n", i, desc);
+        Print(L"Boot%04X : %s \n", *bootNum, desc);
 
         filePathLen = *((UINT16*)(ptr + 4));
         protocol = (EFI_DEVICE_PATH_PROTOCOL*)(ptr + 6 + 2*(StrLen(desc)+1));
@@ -86,8 +88,13 @@ int main(void)
         Print(L"%s \n", ConvertDevicePathToText(protocol, TRUE, TRUE));
         Print(L"\n");
 
-        FreePool(value);
+        FreePool(bootVar);
+
+        bootNum++;
+        varNowCount++;
     }
+
+    FreePool(bootOrder);
 
     return 0;
 }
